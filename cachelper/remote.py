@@ -73,6 +73,12 @@ class HelperMixin(object):
 
                 return self.call(x, key, timeout)
 
+            def clear(*args, **kwargs):
+                key = make_key(key_pattern, f, args, kwargs)
+                self.delete(key)
+
+            _.clear_cachelper_cache = clear
+
             return _
 
         return decorator

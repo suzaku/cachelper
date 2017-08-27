@@ -24,15 +24,31 @@ class TestCacheCall:
         assert func.call_count == 1
 
 
-def test_decorator(redis, mocker):
-    tracker = mocker.Mock()
-    cache = cachelper.RedisCache(redis)
+class TestDecorator:
 
-    @cache("key-{first}-{last}", timeout=300)
-    def get_name(first, last):
-        tracker()
-        return first + ' ' + last
+    def test_should_cache_result(self, redis, mocker):
+        tracker = mocker.Mock()
+        cache = cachelper.RedisCache(redis)
 
-    assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
-    assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
-    assert tracker.call_count == 1
+        @cache("key-{first}-{last}", timeout=300)
+        def get_name(first, last):
+            tracker()
+            return first + ' ' + last
+
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        assert tracker.call_count == 1
+
+    def test_can_clear_cache(self, redis, mocker):
+        tracker = mocker.Mock()
+        cache = cachelper.RedisCache(redis)
+
+        @cache("key-{first}-{last}", timeout=300)
+        def get_name(first, last):
+            tracker()
+            return first + ' ' + last
+
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        get_name.clear_cachelper_cache('Kujo', 'Jotaro')
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        assert tracker.call_count == 2
