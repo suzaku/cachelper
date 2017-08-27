@@ -8,7 +8,7 @@ class TestMemorize:
         func.side_effect = lambda i: i * 2
         func.__name__ = 'double'
 
-        cached = cachelper.memorize()(func)
+        cached = cachelper.memoize()(func)
         assert cached(2) == 4
         assert cached(2) == 4
         assert func.call_count == 1
@@ -21,7 +21,7 @@ class TestMemorize:
         func.side_effect = lambda i: i * 2
         func.__name__ = 'double'
 
-        decorator = cachelper.memorize()
+        decorator = cachelper.memoize()
         cached = decorator(func)
         cached(10)
         cached.clear_cachelper_cache()

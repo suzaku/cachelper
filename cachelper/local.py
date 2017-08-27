@@ -2,10 +2,10 @@ import time
 import functools
 
 
-__all__ = ['memorize']
+__all__ = ['memoize']
 
 
-def memorize(timeout=300):
+def memoize(timeout=300):
     def decorator(f):
         cache = {}
 

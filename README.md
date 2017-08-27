@@ -17,7 +17,7 @@ pip install cachelper
 
 ### In memory cache
 
-#### memorize
+#### memoize
 
 Caching function return values in memory.
 
@@ -26,7 +26,7 @@ Caching function return values in memory.
 
 import cachelper
 
-@cachelper.memorize()
+@cachelper.memoize()
 def fibo(n):
     if n in (0, 1):
         return 1
