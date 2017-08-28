@@ -89,3 +89,22 @@ user_id = 42
 key = "key-{user_id}".format(user_id=user_id)
 cache.call(lambda: get_name(user_id), key, timeout=300)
 ```
+
+#### cached multiple calls
+
+For most cache backends, it's much faster to get or set caches in bulk.
+
+```python
+from redis import StrictRedis
+import cachelper
+
+rds = StrictRedis()
+cache = cachelper.RedisCache(rds)
+
+def get_name(user_id):
+    # Fetch user name from database
+    ...
+
+user_ids = [1, 2, 42, 1984]
+names = cache.map("key-{user_id}", get_name, user_ids, timeout=300)
+```

@@ -49,6 +49,26 @@ class HelperMixin(object):
         return result
 
     def map(self, key_pattern, func, all_args, timeout=None):
+        '''Cache return value of multiple calls.
+
+        Args:
+            key_pattern (str): the key pattern to use for generating
+                               keys for caches of the decorated function.
+            func (function): the function to call.
+            all_args (list): a list of args to be used to make calls to
+                             the function.
+            timeout (int): the cache timeout
+
+        Returns:
+            A list of the return values of the calls.
+
+        Example::
+
+            def add(a, b):
+                return a + b
+
+            cache.map(key_pat, add, [(1, 2), (3, 4)]) == [3, 7]
+        '''
         results = []
         keys = [
             make_key(key_pattern, func, args, {})
