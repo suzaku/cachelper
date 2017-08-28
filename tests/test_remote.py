@@ -24,6 +24,26 @@ class TestCacheCall:
         assert func.call_count == 1
 
 
+def test_cache_map(redis, mocker):
+    tracker = mocker.Mock()
+    cache = cachelper.RedisCache(redis)
+
+    def add(a, b):
+        tracker()
+        if a == 5:
+            return None
+        return a + b
+
+    key_pat = "key-{a}-{b}"
+
+    assert cache.map(key_pat, add, [(1, 2), (3, 4), (5, 1)]) == [3, 7, None]
+    assert cache.map(key_pat, add, [(1, 2), (3, 4), (5, 1)]) == [3, 7, None]
+    assert tracker.call_count == 3
+
+    assert cache.map(key_pat, add, [(10, 10), (1, 2)]) == [20, 3]
+    assert tracker.call_count == 4
+
+
 class TestDecorator:
 
     def test_should_cache_result(self, redis, mocker):

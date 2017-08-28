@@ -48,6 +48,26 @@ class HelperMixin(object):
             )
         return result
 
+    def map(self, key_pattern, func, all_args, timeout=None):
+        results = []
+        keys = [
+            make_key(key_pattern, func, args, {})
+            for args in all_args
+        ]
+        cached = self.get_dict(*keys)
+        cache_to_add = {}
+        for key, args in zip(keys, all_args):
+            val = cached[key]
+            if val is None:
+                val = func(*args)
+                cache_to_add[key] = val if val is not None else NONE_RESULT
+            if val == NONE_RESULT:
+                val = None
+            results.append(val)
+        if cache_to_add:
+            self.set_many(cache_to_add, timeout)
+        return results
+
     def __call__(self, key_pattern, timeout=None):
         '''Use the cache object as a decorator factory.
 
