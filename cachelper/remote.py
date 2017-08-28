@@ -37,9 +37,15 @@ class HelperMixin(object):
             The return value of calling func
         '''
         result = self.get(key)
+        if result == NONE_RESULT:
+            return None
         if result is None:
             result = func()
-            self.set(key, result, timeout)
+            self.set(
+                key,
+                result if result is not None else NONE_RESULT,
+                timeout
+            )
         return result
 
     def __call__(self, key_pattern, timeout=None):
@@ -95,3 +101,30 @@ class MemcachedCache(_MemcachedCache, HelperMixin):
 def make_key(key_pattern, func, args, kwargs):
     callargs = inspect.getcallargs(func, *args, **kwargs)
     return key_pattern.format(**callargs)
+
+
+class Empty(object):
+
+    obj = None
+
+    def __new__(cls):
+        if not cls.obj:
+            cls.obj = object.__new__(cls)
+        return cls.obj
+
+    def __eq__(self, other):
+        return isinstance(other, Empty)
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __nonzero__(self):
+        return False
+
+    def __str__(self):
+        return "<Empty: I'm nothing.>"
+
+    __repr__ = __str__
+
+
+NONE_RESULT = Empty()

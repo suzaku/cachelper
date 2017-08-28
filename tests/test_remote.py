@@ -39,6 +39,19 @@ class TestDecorator:
         assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
         assert tracker.call_count == 1
 
+    def test_should_cache_empty_result(self, redis, mocker):
+        tracker = mocker.Mock()
+        cache = cachelper.RedisCache(redis)
+
+        @cache("key-{first}-{last}", timeout=300)
+        def get_name(first, last):
+            tracker()
+            return None
+
+        assert get_name('Kujo', 'Jotaro') is None
+        assert get_name('Kujo', 'Jotaro') is None
+        assert tracker.call_count == 1
+
     def test_can_clear_cache(self, redis, mocker):
         tracker = mocker.Mock()
         cache = cachelper.RedisCache(redis)
