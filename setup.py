@@ -6,7 +6,7 @@ with open('README.rst') as f:
 
 setup(
     name='cachelper',
-    version='0.1.4',
+    version='0.1.5',
     description='A collection of cache helpers',
     long_description=long_description,
     url='https://github.com/suzaku/cachelper',
