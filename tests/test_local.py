@@ -27,3 +27,21 @@ class TestMemorize:
         cached.clear_cachelper_cache()
         cached(10)
         assert func.call_count == 2
+
+    def test_can_decorate_method(self, mocker):
+        tracker = mocker.Mock()
+
+        class A(object):
+
+            @cachelper.memoize()
+            def calculate(self, x, y):
+                tracker()
+                return x + y
+
+        a1 = A()
+        assert a1.calculate(1, 2) == 3
+        assert a1.calculate(1, 2) == 3
+        assert tracker.call_count == 1
+        a2 = A()
+        assert a2.calculate(1, 2) == 3
+        assert tracker.call_count == 2
