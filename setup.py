@@ -26,7 +26,4 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     keywords='cache',
-    install_requires=[
-        'Werkzeug>=0.9',
-    ],
 )

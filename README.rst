@@ -56,30 +56,32 @@ Add cache by decorating a function or method.
 .. code-block:: python
 
     from redis import StrictRedis
+    from werkzeug.contrib.cache import RedisCache as _RedisCache
+
     import cachelper
 
+    class RedisCache(_RedisCache, HelperMixin):
+        '''werkzeug.contrib.cache.RedisCache mixed with HelperMixin'''
+
+        def get_many(self, keys):
+            return super().get_many(*keys)
+
     rds = StrictRedis()
-    cache = cachelper.RedisCache(rds)
+    cache = RedisCache(rds)
 
     @cache("key-{user_id}", timeout=300)
     def get_name(user_id):
         # Fetch user name from database
         ...
 
-The ``RedisCache`` used in the example above is a subclass of the `werkzeug one <http://werkzeug.pocoo.org/docs/0.12/contrib/cache/#werkzeug.contrib.cache.RedisCache>`_.
-It's just a mixin of the werkzeug implementation and ``cachelper.HelperMixin``.
-
-
-.. code-block:: python
-
-    class RedisCache(_RedisCache, HelperMixin):
-        '''werkzeug.contrib.cache.RedisCache mixed with HelperMixin'''
-
 
 You may use this mixin to create cache class of your own, as long as the following methods are provided:
 
-- `get(key)`
-- `set(key, value, timeout)`
+- ``def get(self, key)``
+- ``def set(self, key, value, timeout=None)``
+- ``def delete(self, key)``
+- ``def get_many(self, keys)``
+- ``def set_many(self, mapping, timeout=None)``
 
 cached function calls
 ------------------------------
@@ -89,12 +91,6 @@ So the decorator is not suitable, we may cache the call instead the function in 
 
 
 .. code-block:: python
-
-    from redis import StrictRedis
-    import cachelper
-
-    rds = StrictRedis()
-    cache = cachelper.RedisCache(rds)
 
     def get_name(user_id):
         # Fetch user name from database
@@ -110,12 +106,6 @@ cached multiple calls
 For most cache backends, it's much faster to get or set caches in bulk.
 
 .. code-block:: python
-
-    from redis import StrictRedis
-    import cachelper
-
-    rds = StrictRedis()
-    cache = cachelper.RedisCache(rds)
 
     def get_name(user_id):
         # Fetch user name from database

@@ -1,13 +1,8 @@
 import inspect
 import functools
 
-from werkzeug.contrib.cache import (
-    RedisCache as _RedisCache,
-    MemcachedCache as _MemcachedCache,
-)
 
-
-__all__ = ['HelperMixin', 'RedisCache']
+__all__ = ['HelperMixin']
 
 
 class HelperMixin(object):
@@ -19,6 +14,8 @@ class HelperMixin(object):
         - def get(self, key)
         - def set(self, key, value, timeout=None)
         - def delete(self, key)
+        - def get_dict(self, keys)
+        - def set_many(self, mapping, timeout=None)
     '''
 
     def call(self, func, key, timeout=None):
@@ -74,7 +71,7 @@ class HelperMixin(object):
             make_key(key_pattern, func, args, {})
             for args in all_args
         ]
-        cached = self.get_dict(*keys)
+        cached = dict(zip(keys, self.get_many(keys)))
         cache_to_add = {}
         for key, args in zip(keys, all_args):
             val = cached[key]
@@ -128,14 +125,6 @@ class HelperMixin(object):
             return _
 
         return decorator
-
-
-class RedisCache(_RedisCache, HelperMixin):
-    '''werkzeug.contrib.cache.RedisCache mixed with HelperMixin'''
-
-
-class MemcachedCache(_MemcachedCache, HelperMixin):
-    '''werkzeug.contrib.cache.MemcachedCache mixed with HelperMixin'''
 
 
 def make_key(key_pattern, func, args, kwargs):

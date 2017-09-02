@@ -1,9 +1,14 @@
-import time
-
 import pytest
 from redislite import StrictRedis
+from werkzeug.contrib.cache import RedisCache as _RedisCache
 
 import cachelper
+
+
+class RedisCache(_RedisCache, cachelper.HelperMixin):
+
+    def get_many(self, keys):
+        return _RedisCache.get_many(self, *keys)
 
 
 @pytest.fixture()
@@ -11,22 +16,25 @@ def redis(tmpdir):
     yield StrictRedis(str(tmpdir.join('redis.db')))
 
 
+@pytest.fixture()
+def cache(redis):
+    yield RedisCache(redis)
+
+
 class TestCacheCall:
 
-    def test_should_cache_result(self, redis, mocker):
+    def test_should_cache_result(self, cache, mocker):
         key = 'some-key'
         func = mocker.Mock()
         ret = func.return_value = {'name': 'Jojo'}
 
-        cache = cachelper.RedisCache(redis)
         assert cache.call(func, key) == ret
         assert cache.call(func, key) == ret
         assert func.call_count == 1
 
 
-def test_cache_map(redis, mocker):
+def test_cache_map(cache, mocker):
     tracker = mocker.Mock()
-    cache = cachelper.RedisCache(redis)
 
     def add(a, b):
         tracker()
@@ -46,9 +54,8 @@ def test_cache_map(redis, mocker):
 
 class TestDecorator:
 
-    def test_should_cache_result(self, redis, mocker):
+    def test_should_cache_result(self, cache, mocker):
         tracker = mocker.Mock()
-        cache = cachelper.RedisCache(redis)
 
         @cache("key-{first}-{last}", timeout=300)
         def get_name(first, last):
@@ -59,9 +66,8 @@ class TestDecorator:
         assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
         assert tracker.call_count == 1
 
-    def test_should_cache_empty_result(self, redis, mocker):
+    def test_should_cache_empty_result(self, cache, mocker):
         tracker = mocker.Mock()
-        cache = cachelper.RedisCache(redis)
 
         @cache("key-{first}-{last}", timeout=300)
         def get_name(first, last):
@@ -72,9 +78,8 @@ class TestDecorator:
         assert get_name('Kujo', 'Jotaro') is None
         assert tracker.call_count == 1
 
-    def test_can_clear_cache(self, redis, mocker):
+    def test_can_clear_cache(self, cache, mocker):
         tracker = mocker.Mock()
-        cache = cachelper.RedisCache(redis)
 
         @cache("key-{first}-{last}", timeout=300)
         def get_name(first, last):
