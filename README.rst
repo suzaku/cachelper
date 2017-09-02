@@ -3,6 +3,8 @@ cachelper
 
 .. image:: https://travis-ci.org/suzaku/cachelper.svg?branch=master
     :target: https://travis-ci.org/suzaku/cachelper
+.. image:: https://img.shields.io/pypi/v/cachelper.svg
+    :target: https://pypi.python.org/pypi/cachelper
 
 Useful cache helpers in one package!
 
