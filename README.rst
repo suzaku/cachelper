@@ -58,7 +58,7 @@ Add cache by decorating a function or method.
     from redis import StrictRedis
     from werkzeug.contrib.cache import RedisCache as _RedisCache
 
-    import cachelper
+    from cachelper import HelperMixin
 
     class RedisCache(_RedisCache, HelperMixin):
         '''werkzeug.contrib.cache.RedisCache mixed with HelperMixin'''

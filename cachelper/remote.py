@@ -7,7 +7,7 @@ __all__ = ['HelperMixin']
 
 class HelperMixin(object):
 
-    '''A mixin class that add helpers to basic cache classes.
+    '''A mixin class that adds helpers to basic cache classes.
 
     Basic cache classes are classes with the following methods:
 
@@ -108,7 +108,7 @@ class HelperMixin(object):
         def decorator(f):
 
             @functools.wraps(f)
-            def _(*args, **kwargs):
+            def inner(*args, **kwargs):
                 key = make_key(key_pattern, f, args, kwargs)
 
                 def x():
@@ -120,9 +120,9 @@ class HelperMixin(object):
                 key = make_key(key_pattern, f, args, kwargs)
                 self.delete(key)
 
-            _.clear_cachelper_cache = clear
+            inner.clear_cachelper_cache = clear
 
-            return _
+            return inner
 
         return decorator
 
