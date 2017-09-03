@@ -7,7 +7,7 @@ __all__ = ['HelperMixin']
 
 class HelperMixin(object):
 
-    '''A mixin class that add helpers to basic cache classes.
+    '''A mixin class that adds helpers to basic cache classes.
 
     Basic cache classes are classes with the following methods:
 
