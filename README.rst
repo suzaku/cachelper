@@ -48,10 +48,18 @@ Caching function return values in memory.
 Cache with Redis/Memcached
 ==============================
 
-cache decorator
----------------
+Using the HelperMixin
+---------------------
 
-Add cache by decorating a function or method.
+``HelperMixin`` can be used with any cache client classes that implement the following methods:
+
+- ``def get(self, key)``
+- ``def set(self, key, value, timeout=None)``
+- ``def delete(self, key)``
+- ``def get_many(self, keys)``
+- ``def set_many(self, mapping, timeout=None)``
+
+For example, `RedisCache` from `werkzeug` is one such class:
 
 .. code-block:: python
 
@@ -69,11 +77,21 @@ Add cache by decorating a function or method.
     rds = StrictRedis()
     cache = RedisCache(rds)
 
+This mixin defines these methods: ``call``, ``map``, ``__call__``.
+If your class already defines methods of the same name, the mixin methods may not work correctly.
+
+
+cache decorator
+---------------
+
+Add cache by decorating a function or method.
+
+.. code-block:: python
+
     @cache("key-{user_id}", timeout=300)
     def get_name(user_id):
         # Fetch user name from database
         ...
-
 
 The cache key template can also be a function which acts as a key factory:
 
@@ -89,14 +107,6 @@ The cache key template can also be a function which acts as a key factory:
 
 Just make sure the key factory function accepts the same parameters as the cached
 function and returns the key.
-
-You may use this mixin to create cache class of your own, as long as the following methods are provided:
-
-- ``def get(self, key)``
-- ``def set(self, key, value, timeout=None)``
-- ``def delete(self, key)``
-- ``def get_many(self, keys)``
-- ``def set_many(self, mapping, timeout=None)``
 
 cached function calls
 ------------------------------
