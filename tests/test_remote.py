@@ -46,6 +46,10 @@ def test_cache_map(cache, mocker):
 
     assert cache.map(key_pat, add, [(1, 2), (3, 4), (5, 1)]) == [3, 7, None]
     assert cache.map(key_pat, add, [(1, 2), (3, 4), (5, 1)]) == [3, 7, None]
+    assert cache.map(
+        lambda a, b: key_pat.format(a=a, b=b),
+        add, [(1, 2), (3, 4), (5, 1)]
+    ) == [3, 7, None]
     assert tracker.call_count == 3
 
     assert cache.map(key_pat, add, [(10, 10), (1, 2)]) == [20, 3]
@@ -53,6 +57,23 @@ def test_cache_map(cache, mocker):
 
 
 class TestDecorator:
+
+    def test_should_support_function_as_key_tmpl(self, cache, mocker):
+        tracker = mocker.Mock()
+
+        def key(first, last):
+            return "key-%s-%s" % (first, last)
+
+        @cache(key, timeout=300)
+        def get_name(first, last):
+            tracker()
+            return first + ' ' + last
+
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        assert get_name('Kujo', 'Jotaro') == 'Kujo Jotaro'
+        assert tracker.call_count == 1
+        assert get_name('Kujo', 'Jolyne') == 'Kujo Jolyne'
+        assert tracker.call_count == 2
 
     def test_should_cache_result(self, cache, mocker):
         tracker = mocker.Mock()

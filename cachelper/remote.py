@@ -128,8 +128,13 @@ class HelperMixin(object):
 
 
 def make_key(key_pattern, func, args, kwargs):
-    callargs = inspect.getcallargs(func, *args, **kwargs)
-    return key_pattern.format(**callargs)
+    if not callable(key_pattern):
+        def gen_key(*args, **kwargs):
+            callargs = inspect.getcallargs(func, *args, **kwargs)
+            return key_pattern.format(**callargs)
+    else:
+        gen_key = key_pattern
+    return gen_key(*args, **kwargs)
 
 
 class Empty(object):

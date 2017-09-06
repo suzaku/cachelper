@@ -75,6 +75,21 @@ Add cache by decorating a function or method.
         ...
 
 
+The cache key template can also be a function which acts as a key factory:
+
+.. code-block:: python
+
+    def name_key(user_id):
+        return "key-%s" % user_id
+
+    @cache(name_key, timeout=300)
+    def get_name(user_id):
+        # Fetch user name from database
+        ...
+
+Just make sure the key factory function accepts the same parameters as the cached
+function and returns the key.
+
 You may use this mixin to create cache class of your own, as long as the following methods are provided:
 
 - ``def get(self, key)``
