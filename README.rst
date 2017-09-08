@@ -8,12 +8,6 @@ cachelper
 
 Useful cache helpers in one package!
 
-.. image:: https://app.codesponsor.io/embed/MY7qFCdB7bDgiBqdjtV9ASYi/suzaku/cachelper.svg
-    :width: 888px
-    :height: 68px
-    :alt: Sponsor
-    :target: https://app.codesponsor.io/link/MY7qFCdB7bDgiBqdjtV9ASYi/suzaku/cachelper
-
 Install
 *******
 
@@ -138,3 +132,9 @@ For most cache backends, it's much faster to get or set caches in bulk.
 
     user_ids = [1, 2, 42, 1984]
     names = cache.map("key-{user_id}", get_name, user_ids, timeout=300)
+
+.. image:: https://app.codesponsor.io/embed/MY7qFCdB7bDgiBqdjtV9ASYi/suzaku/cachelper.svg
+    :width: 888px
+    :height: 68px
+    :alt: Sponsor
+    :target: https://app.codesponsor.io/link/MY7qFCdB7bDgiBqdjtV9ASYi/suzaku/cachelper
